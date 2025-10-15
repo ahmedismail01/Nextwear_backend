@@ -30,5 +30,20 @@ class authService {
   async comparePassword(inputPassword, storedPassword) {
     return bcrypt.compareSync(inputPassword, storedPassword);
   }
+
+  async hashPassword(password) {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+  }
+
+  async verifyToken(token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      return decoded;
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      throw new Error("Invalid token");
+    }
+  }
 }
 module.exports = new authService();

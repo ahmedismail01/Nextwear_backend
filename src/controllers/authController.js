@@ -1,5 +1,5 @@
 const authService = require("../services/authService");
-const userDto = require("../dto/userDto");
+const {santizeUser} = require("../dto/userDto");
 
 const login = async (req, res) => {
   const body = req.body;
@@ -13,6 +13,7 @@ const login = async (req, res) => {
 
   // generate token
   const payload = { id: user._id, email: user.email, role: user.role };
+  console.log(payload)
   const token = await authService.generateToken(payload);
 
   res.cookie("access_token", token, {
@@ -22,7 +23,7 @@ const login = async (req, res) => {
   });
 
   // sanitize user object before sending response
-  const sanitizedUser = userDto(user);
+  const sanitizedUser = santizeUser(user);
 
   res.json({ success: true, user: sanitizedUser, token });
 };
@@ -46,7 +47,7 @@ const register = async (req, res) => {
   });
 
   // sanitize user object before sending response
-  const sanitizedUser = userDto(user);
+  const sanitizedUser = santizeUser(user);
 
   res.json({ success: true, user: sanitizedUser, token });
 };
