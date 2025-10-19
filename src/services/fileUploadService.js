@@ -15,7 +15,8 @@ class FileUploadService {
     return result.secure_url;
   }
   async uploadImages(files) {
-    const urls = await Promise.all(files.map((file) => this.uploadImage(file)));
+    if (!files?.length) return [];
+    const urls = await Promise.all(files?.map((file) => this.uploadImage(file)));
     return urls;
   }
 }

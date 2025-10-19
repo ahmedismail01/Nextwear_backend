@@ -78,10 +78,18 @@ const removeVariant = async (productId, variantId) => {
       { $pull: { variants: { _id: variantId } } },
       { new: true }
     );
+
+    if (!rec) {
+      const error = new Error("Product not found");
+      error.statusCode = 404;
+      error.isCustom = true;
+      throw error;
+    }
+
     const variant = rec.variants.id(variantId)?.toObject();
 
-    if (!variant || !rec) {
-      const error = new Error(!rec ? "Product not found" : "Variant not found");
+    if (!variant) {
+      const error = new Error("Variant not found");
       error.statusCode = 404;
       error.isCustom = true;
       throw error;

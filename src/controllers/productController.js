@@ -55,7 +55,7 @@ const updateById = async (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid id" });
   }
 
-  const updatedProduct = await productCommand.updateRecord({ _id :id }, data);
+  const updatedProduct = await productCommand.updateRecord({ _id: id }, data);
   res.json({ success: true, data: updatedProduct });
 };
 
@@ -89,14 +89,17 @@ const createVariant = async (req, res) => {
 };
 
 const updateVariant = async (req, res) => {
-  const data = req.body;
+  const data = req.body || {};
   const { productId, variantId } = req.params;
   const files = req.files;
+  let imageUrls = [];
 
-  const imageUrls = await fileUploadService.uploadImages(files);
+  if (files?.length) {
+    imageUrls = await fileUploadService.uploadImages(files);
+  }
 
-  let images = [...(data?.images || []), ...imageUrls];
-  data.images = images;
+  let imagesSet = new Set([...(data?.images || []), ...imageUrls || []]);
+  data.images = [ ...imagesSet ];
   const updatedVariant = await productCommand.updateVariant(
     productId,
     variantId,
