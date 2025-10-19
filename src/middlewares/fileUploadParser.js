@@ -8,9 +8,6 @@ const upload = ({
   allowedFileTypes,
   maxSizeMB = 5,
 }) => {
-  if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest, { recursive: true });
-  }
 
   let defaultTypes = [];
   if (fileType === "image") {

@@ -7,7 +7,6 @@ const validator = require("../../middlewares/validator");
 const schema = require("../../validations/productsValidation");
 
 const uploadImages = upload({
-  dest: "uploads/products",
   fileType: "image",
   maxSizeMB: 10,
 });
