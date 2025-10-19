@@ -13,7 +13,6 @@ const login = async (req, res) => {
 
   // generate token
   const payload = { id: user._id, email: user.email, role: user.role };
-  console.log(payload)
   const token = await authService.generateToken(payload);
 
   res.cookie("access_token", token, {

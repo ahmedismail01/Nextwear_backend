@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const port = process.env.PORT || 3000;
 
 connectDB();
+
 app.use(cors());
 app.use(morgan("dev"));
 app.use(cookieParser());
@@ -21,6 +22,10 @@ app.use(errorHandler);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Nextwear API");
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({ success: false, message: "Route not found" });
 });
 
 http.listen(port, () => {

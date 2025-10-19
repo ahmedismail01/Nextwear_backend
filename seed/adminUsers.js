@@ -1,5 +1,4 @@
 // seed for admin user
-const bcrypt = require("bcryptjs");
 const userCommand = require("../src/commands/userCommand");
 const userQuery = require("../src/queries/userQuery");
 
@@ -19,14 +18,11 @@ module.exports.seedAdminUser = async () => {
       email: adminData.email,
     });
     if (existingAdmin) {
-      console.log("Admin user already exists. Exiting...");
-      process.exit(0);
+      return;
     }
     const adminUser = await userCommand.createRecord(adminData);
     console.log("Admin user created:", adminUser);
-    process.exit(0);
   } catch (error) {
     console.error("Error seeding admin user:", error.message);
-    process.exit(1);
   }
 };
