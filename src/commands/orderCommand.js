@@ -13,7 +13,7 @@ const createRecord = async (data) => {
 
 const updateRecord = async (query, updateData) => {
   try {
-    const rec = await Order.findOneAndUpdate(query, updateData, { new: true });
+    const rec = await Order.findOneAndUpdate(query, {...updateData , updatedAt: new Date()}, { new: true });
     return rec;
   } catch (error) {
     console.error("Error updating order:", error);

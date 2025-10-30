@@ -9,7 +9,7 @@ module.exports = schema = {
       featured: z.coerce.boolean().optional(),
       createdAt: z.coerce.date().optional(),
 
-      sort: z.object({}).optional(),
+      sort: z.string().optional(),
 
       searchString: z.string().optional(),
 

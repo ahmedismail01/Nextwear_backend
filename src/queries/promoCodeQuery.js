@@ -10,10 +10,14 @@ const getRecord = async (query) => {
   }
 };
 
-const getRecords = async (query) => {
+const getRecords = async (query, skip, limit, sort) => {
   try {
-    const promocodes = await PromoCode.find(query);
-    return promocodes;
+    const promocodes = await PromoCode.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort(sort);
+    const count = await PromoCode.countDocuments(query);
+    return { promocodes, count };
   } catch (error) {
     console.error("Error fetching promocodes:", error);
     throw error;

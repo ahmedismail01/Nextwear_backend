@@ -41,7 +41,6 @@ class authService {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       return decoded;
     } catch (error) {
-      console.error("Token verification failed:", error);
       throw new Error("Invalid token");
     }
   }

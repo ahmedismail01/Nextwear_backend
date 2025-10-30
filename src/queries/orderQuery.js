@@ -10,10 +10,22 @@ const getRecord = async (query) => {
   }
 };
 
-const getRecords = async (query) => {
+const getRecords = async (query, offset, limit, sort) => {
   try {
-    const orders = await Order.find(query);
-    return orders;
+    
+    if (query.minFinalPrice || query.maxFinalPrice) {
+      query.finalPrice = {};
+      if (query.minFinalPrice)
+        query.finalPrice.$gte = Number(query.minFinalPrice);
+      if (query.maxFinalPrice)
+        query.finalPrice.$lte = Number(query.maxFinalPrice);
+      delete query.minFinalPrice;
+      delete query.maxFinalPrice;
+    }
+
+    const orders = await Order.find(query).sort(sort).skip(offset).limit(limit);
+    const count = await Order.countDocuments(query);
+    return { orders, count };
   } catch (error) {
     console.error("Error fetching orders:", error);
     throw error;

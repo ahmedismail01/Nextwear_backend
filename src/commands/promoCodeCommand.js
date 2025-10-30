@@ -36,12 +36,30 @@ const deleteRecord = async (query) => {
 const redeem = async (code) => {
   try {
     const pc = await PromoCode.findOne({ code }).exec();
-    if (!pc) throw new Error("Promo code not found");
-    if (!pc.isActive) throw new Error("Promo code inactive");
-    if (pc.expirationDate && pc.expirationDate < new Date())
-      throw new Error("Promo code expired");
-    if (pc.maxUses && pc.uses >= pc.maxUses)
-      throw new Error("Promo code fully used");
+    if (!pc) {
+      const error = new Error("Promo code not found");
+      error.statusCode = 404;
+      error.isCustom = true;
+      throw error;
+    }
+    if (!pc.isActive) {
+      const error = new Error("Promo code is not active");
+      error.statusCode = 400;
+      error.isCustom = true;
+      throw error;
+    }
+    if (pc.expirationDate && pc.expirationDate < new Date()) {
+      const error = new Error("Promo code has expired");
+      error.statusCode = 400;
+      error.isCustom = true;
+      throw error;
+    }
+    if (pc.maxUses && pc.uses >= pc.maxUses) {
+      const error = new Error("Promo code has reached its maximum uses");
+      error.statusCode = 400;
+      error.isCustom = true;
+      throw error;
+    }
     pc.uses = (pc.uses || 0) + 1;
     await pc.save();
     return pc;

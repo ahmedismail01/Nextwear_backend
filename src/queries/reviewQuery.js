@@ -10,10 +10,14 @@ const getRecord = async (query) => {
   }
 };
 
-const getRecords = async (query) => {
+const getRecords = async (query, skip, limit, sort) => {
   try {
-    const reviews = await Review.find(query);
-    return reviews;
+    const reviews = await Review.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+    const count = await Review.countDocuments(query);
+    return { reviews, count };
   } catch (error) {
     console.error("Error fetching reviews:", error);
     throw error;
