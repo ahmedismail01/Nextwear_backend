@@ -1,5 +1,5 @@
 const authService = require("../services/authService");
-const {santizeUser} = require("../dto/userDto");
+const { santizeUser } = require("../dto/userDto");
 
 const login = async (req, res) => {
   const body = req.body;
