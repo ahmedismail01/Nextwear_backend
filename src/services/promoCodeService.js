@@ -1,5 +1,6 @@
 const promocodeCommand = require("../commands/promoCodeCommand");
 const promocodeQuery = require("../queries/promoCodeQuery");
+const AppError = require("../utils/appError");
 class PromoCodeService {
   async redeem(code) {
     return await promocodeCommand.redeem(code);
@@ -10,10 +11,7 @@ class PromoCodeService {
       code: data.code,
     });
     if (existingPromocode) {
-      const error = new Error("Promo code already exists");
-      error.statusCode = 400;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Promo code already exists", 400, true);
     }
 
     return await promocodeCommand.createRecord(data);

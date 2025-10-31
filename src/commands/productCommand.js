@@ -10,6 +10,7 @@ const createRecord = async (data) => {
     throw error;
   }
 };
+const AppError = require("../utils/appError");
 
 const updateRecord = async (query, updateData) => {
   try {
@@ -18,10 +19,7 @@ const updateRecord = async (query, updateData) => {
     });
 
     if (!rec) {
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Product not found", 404, true);
     }
 
     return rec;
@@ -36,10 +34,7 @@ const deleteRecord = async (query) => {
     const result = await Product.findOneAndDelete(query);
 
     if (!result) {
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Product not found", 404, true);
     }
 
     return result;
@@ -58,10 +53,7 @@ const addVariant = async (productId, data) => {
     );
 
     if (!rec) {
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Product not found", 404, true);
     }
 
     return rec;
@@ -80,19 +72,13 @@ const removeVariant = async (productId, variantId) => {
     );
 
     if (!rec) {
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Product not found", 404, true);
     }
 
     const variant = rec.variants.id(variantId)?.toObject();
 
     if (!variant) {
-      const error = new Error("Variant not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Variant not found", 404, true);
     }
 
     return rec;
@@ -109,19 +95,13 @@ const updateVariant = async (productId, variantId, data) => {
     });
 
     if (!oldData) {
-      const error = new Error("Product not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Product not found", 404, true);
     }
 
     const variant = oldData.variants.id(variantId)?.toObject();
 
     if (!variant) {
-      const error = new Error("Variant not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Variant not found", 404, true);
     }
 
     data = { ...variant, ...data, images: [...variant.images, ...data.images] };

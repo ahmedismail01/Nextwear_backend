@@ -40,7 +40,9 @@ const getById = async (req, res) => {
   const product = await productQuery.getRecord({ _id: id });
 
   if (!product) {
-    return res.status(404).json({ success: false, message: "Product not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Product not found" });
   }
 
   const santizedProduct = santizeProduct(product);
@@ -98,8 +100,8 @@ const updateVariant = async (req, res) => {
     imageUrls = await fileUploadService.uploadImages(files);
   }
 
-  let imagesSet = new Set([...(data?.images || []), ...imageUrls || []]);
-  data.images = [ ...imagesSet ];
+  let imagesSet = new Set([...(data?.images || []), ...(imageUrls || [])]);
+  data.images = [...imagesSet];
   const updatedVariant = await productCommand.updateVariant(
     productId,
     variantId,

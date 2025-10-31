@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const AppError = require("../utils/appError");
 
 const upload = ({
   dest = "uploads/others",
@@ -30,7 +31,7 @@ const upload = ({
     if (typesToUse.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error(`Only ${fileType} files are allowed!`), false);
+      cb(new AppError(`Only ${fileType} files are allowed!`, 400, true), false);
     }
   };
 

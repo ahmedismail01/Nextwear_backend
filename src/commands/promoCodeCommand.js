@@ -1,4 +1,5 @@
 const PromoCode = require("../models/promoCode");
+const AppError = require("../utils/appError");
 
 const createRecord = async (data) => {
   try {
@@ -37,28 +38,16 @@ const redeem = async (code) => {
   try {
     const pc = await PromoCode.findOne({ code }).exec();
     if (!pc) {
-      const error = new Error("Promo code not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Promo code not found", 404, true);
     }
     if (!pc.isActive) {
-      const error = new Error("Promo code is not active");
-      error.statusCode = 400;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Promo code is not active", 400, true);
     }
     if (pc.expirationDate && pc.expirationDate < new Date()) {
-      const error = new Error("Promo code has expired");
-      error.statusCode = 400;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Promo code has expired", 400, true);
     }
     if (pc.maxUses && pc.uses >= pc.maxUses) {
-      const error = new Error("Promo code has reached its maximum uses");
-      error.statusCode = 400;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Promo code has reached its maximum uses", 400, true);
     }
     pc.uses = (pc.uses || 0) + 1;
     await pc.save();
