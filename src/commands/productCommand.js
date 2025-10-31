@@ -75,12 +75,6 @@ const removeVariant = async (productId, variantId) => {
       throw new AppError("Product not found", 404, true);
     }
 
-    const variant = rec.variants.id(variantId)?.toObject();
-
-    if (!variant) {
-      throw new AppError("Variant not found", 404, true);
-    }
-
     return rec;
   } catch (error) {
     console.error("Error removing variant:", error);
