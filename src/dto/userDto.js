@@ -5,6 +5,10 @@ module.exports.santizeUser = (user) => {
     firstName: user.firstName,
     lastName: user.lastName,
     role: user.role,
+    phoneNumber: user.phoneNumber,
+    addresses: user.addresses,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 };
 

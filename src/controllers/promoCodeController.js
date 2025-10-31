@@ -57,5 +57,5 @@ module.exports = {
   deleteById,
   updateById,
   getById,
-  deactivate
+  deactivate,
 };

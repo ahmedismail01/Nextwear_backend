@@ -1,21 +1,16 @@
 const orderQuery = require("../queries/orderQuery");
 const orderCommand = require("../commands/orderCommand");
+const AppError = require("../utils/appError");
 class OrderService {
   async changeOrderStatus(orderId, status) {
     // check if order exists
     const order = await orderQuery.getRecord({ _id: orderId });
     if (!order) {
-      const error = new Error("Order not found");
-      error.statusCode = 404;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Order not found", 404, true);
     }
 
     if (order.status === status) {
-      const error = new Error("Order status is already " + status);
-      error.statusCode = 400;
-      error.isCustom = true;
-      throw error;
+      throw new AppError("Order status is already " + status, 400, true);
     }
 
     // change order status

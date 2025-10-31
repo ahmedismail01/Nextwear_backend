@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  address: {
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    country: { type: String, required: true },
+  },
   products: [
     {
       product: {
@@ -9,10 +16,15 @@ const OrderSchema = new mongoose.Schema({
         ref: "Product",
         required: true,
       },
+      variant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Variant",
+        required: true,
+      },
+      image: { type: String, required: false },
       name: { type: String, required: true },
       purchasePrice: { type: Number, required: true, min: 0 },
       quantity: { type: Number, required: true, min: 1 },
-      sku: { type: String },
     },
   ],
   finalPrice: { type: Number, required: true, min: 0 },

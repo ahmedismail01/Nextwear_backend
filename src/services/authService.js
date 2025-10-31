@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const userQuery = require("../queries/userQuery");
 const userCommand = require("../commands/userCommand");
 const bcrypt = require("bcryptjs");
+const AppError = require("../utils/appError");
 class authService {
   async login(email, password) {
     const user = await userQuery.getRecord({ email });
@@ -41,7 +42,7 @@ class authService {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       return decoded;
     } catch (error) {
-      throw new Error("Invalid token");
+      throw new AppError("Invalid token", 401, true);
     }
   }
 }
