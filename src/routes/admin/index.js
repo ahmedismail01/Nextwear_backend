@@ -10,5 +10,6 @@ app.use("/products", productsRoutes);
 app.use("/orders", ordersRoutes);
 app.use("/reviews", reviewsRoutes);
 app.use("/promocodes", promocodesRoutes);
+app.use("/categories", require("./category"));
 
 module.exports = app;

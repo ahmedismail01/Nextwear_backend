@@ -13,6 +13,16 @@ const ProductSchema = new mongoose.Schema({
       quantity: { type: Number, required: true, min: 0 },
     },
   ],
+  category: {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    name: { type: String, required: true },
+    image: { type: String },
+    slug: { type: String },
+  },
   discount: { type: Number, min: 0, max: 100, default: 0 },
   featured: { type: Boolean, default: false },
   averageRating: { type: Number, min: 0, max: 5, default: 0 },

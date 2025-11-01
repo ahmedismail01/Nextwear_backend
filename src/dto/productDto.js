@@ -10,6 +10,7 @@ const santizeProduct = (product) => {
     featured: product?.featured,
     averageRating: product?.averageRating,
     createdAt: product?.createdAt,
+    category: product?.category,
   };
 };
 
