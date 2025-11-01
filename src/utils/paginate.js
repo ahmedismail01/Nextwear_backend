@@ -4,7 +4,7 @@ module.exports.paginate = (page = 1, limit  = 10) => {
   return { offset, limit };
 };
 
-module.exports.paginationResponse = (currentPage = 1, count, limit) => {
+module.exports.paginationResponse = (currentPage = 1, count, limit = 10) => {
   const totalPages = Math.ceil(count / limit) || 1;
   return {
     totalPages,
