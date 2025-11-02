@@ -44,6 +44,16 @@ const deleteRecord = async (query) => {
   }
 };
 
+const updateRecords = async (query, updateData) => {
+  try {
+    const rec = await Product.updateMany(query, updateData, { new: true });
+    return rec;
+  } catch (error) {
+    console.error("Error updating products:", error);
+    throw error;
+  }
+};
+
 const addVariant = async (productId, data) => {
   try {
     const rec = await Product.findOneAndUpdate(
@@ -116,6 +126,7 @@ module.exports = {
   createRecord,
   updateRecord,
   deleteRecord,
+  updateRecords,
   addVariant,
   removeVariant,
   updateVariant,

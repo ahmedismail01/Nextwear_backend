@@ -4,6 +4,7 @@ const { paginate, paginationResponse } = require("../utils/paginate");
 const { santizeProduct, santizeProducts } = require("../dto/productDto");
 const fileUploadService = require("../services/fileUploadService");
 const isValidId = require("../utils/isValidId");
+const productService = require("../services/productService");
 
 const list = async (req, res) => {
   const { sort, page, limit, ...filter } = req.query;
@@ -52,12 +53,12 @@ const getById = async (req, res) => {
 const updateById = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
-
+  
   if (!isValidId(id)) {
     return res.status(400).json({ success: false, message: "Invalid id" });
   }
 
-  const updatedProduct = await productCommand.updateRecord({ _id: id }, data);
+  const updatedProduct = await productService.updateProduct(id, data);
   res.json({ success: true, data: updatedProduct });
 };
 

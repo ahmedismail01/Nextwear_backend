@@ -32,6 +32,9 @@ module.exports = schema = {
       name: z.string(),
       description: z.string(),
       materials: z.array(z.string()),
+      category: z.refine((id) => isValidId(id), {
+        message: "Invalid category id",
+      }),
       discount: z.coerce.number().max(100).min(0).default(0),
       featured: z.coerce.boolean(),
     }),
@@ -44,6 +47,9 @@ module.exports = schema = {
       price: z.coerce.number().optional(),
       discount: z.coerce.number().max(100).min(0).optional(),
       featured: z.coerce.boolean().optional(),
+      category: z.refine((id) => isValidId(id), {
+        message: "Invalid category id",
+      }),
     }),
   },
   variant: {
@@ -82,11 +88,14 @@ module.exports = schema = {
       materials: z.array(z.string()).optional(),
       discount: z.coerce.number().max(100).min(0).optional(),
       featured: z.coerce.boolean().optional(),
+      category: z.refine((id) => isValidId(id), {
+        message: "Invalid category id",
+      }),
     }),
     params: z.object({
       id: z.refine((id) => isValidId(id), {
         message: "Invalid product id",
       }),
     }),
-  }
+  },
 };
