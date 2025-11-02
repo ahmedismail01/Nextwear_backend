@@ -1,6 +1,6 @@
 require("dotenv").config();
 require("../src/config/db")();
-require("./worker");
+// require("./worker");
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
