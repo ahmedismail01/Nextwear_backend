@@ -1,8 +1,3 @@
-require("dotenv").config();
-const connectDB = require("../config/db");
-
-connectDB();
-
 const productCommand = require("../commands/productCommand");
 const { Worker } = require("bullmq");
 
