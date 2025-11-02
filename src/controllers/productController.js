@@ -28,7 +28,7 @@ const list = async (req, res) => {
 
 const create = async (req, res) => {
   const data = req.body;
-  const newProduct = await productCommand.createRecord(data);
+  const newProduct = await productService.createProduct(data);
   const santizedProduct = santizeProduct(newProduct);
   res.status(201).json({ success: true, data: santizedProduct });
 };
