@@ -11,7 +11,7 @@ const updateCategory = async (req, res) => {
 };
 
 const deleteCategory = async (req, res) => {
-  const result = await categoryService.deleteCategory(req.query);
+  const result = await categoryService.deleteCategory({ _id: req.params.id });
   res.status(200).json({ success: true, data: result });
 };
 
@@ -21,7 +21,7 @@ const getCategories = async (req, res) => {
 };
 
 const getCategory = async (req, res) => {
-  const result = await categoryService.getCategory(req.query);
+  const result = await categoryService.getCategory({ _id: req.params.id });
   res.status(200).json({ success: true, data: result });
 };
 
