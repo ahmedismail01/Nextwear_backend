@@ -1,4 +1,4 @@
-const { isValidId } = require("../utils/isValidId");
+const isValidId = require("../utils/isValidId");
 const { z } = require("zod");
 module.exports = schema = {
   create: {
@@ -8,6 +8,12 @@ module.exports = schema = {
   },
 
   update: {
+    params: z.object({
+      id: z.refine((id) => isValidId(id), {
+        message: "Invalid category id",
+      }),
+    }),
+
     body: z.object({
       name: z.string().min(1).optional(),
     }),

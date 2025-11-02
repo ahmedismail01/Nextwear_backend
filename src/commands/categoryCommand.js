@@ -14,6 +14,7 @@ const createRecord = async (data) => {
 
 const updateRecord = async (query, updateData) => {
   try {
+    console.log({query})
     const rec = await Category.findOneAndUpdate(query, updateData, {
       new: true,
     });

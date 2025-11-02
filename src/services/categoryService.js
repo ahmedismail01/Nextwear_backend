@@ -12,6 +12,7 @@ class CategoryService {
   }
 
   async updateCategory(query, updateData) {
+    
     // update category
     const result = await categoryCommand.updateRecord(query, updateData);
 
