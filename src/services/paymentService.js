@@ -1,0 +1,65 @@
+const paymobConnector = require("../connectors/paymob/paymobConnector");
+const paymentSchema = require("../validations/paymobValidation");
+const AppError = require("../utils/AppError");
+const formateError = require("../utils/formateValidationError");
+const orderService = require("./orderService");
+
+class PaymentService {
+  constructor() {}
+
+  async getPaymentLink({ products, user, finalPrice, orderId }) {
+    const priceInCents = finalPrice * 100;
+
+    let data = {
+      amount: priceInCents,
+      special_reference: orderId,
+      currency: "EGP",
+      payment_methods: ["test"],
+      billing_data: {
+        first_name: user.firstName,
+        last_name: user.lastName,
+        email: user.email,
+        phone_number: user.phoneNumber,
+      },
+      items: products,
+      special_reference: orderId,
+    };
+
+    const parsed = paymentSchema.createPayment.body.safeParse(data);
+    if (!parsed.success)
+      throw new AppError(`${formateError(parsed.error.issues[0])}`, 400, true);
+
+    data = parsed.data;
+
+    const response = await paymobConnector.createPayment(data);
+    let clientSecret = response?.client_secret;
+    if (!clientSecret) throw new AppError("Payment failed", 400, true);
+
+    let paymentLink = `${process.env.PAYMOB_PAYMENT_URL}?publicKey=${process.env.PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
+    return paymentLink;
+  }
+
+  async onNotification(data) {
+    const { type } = data;
+
+    switch (type) {
+      case "TRANSACTION":
+        console.log("Transaction successfull");
+        console.log(data);
+
+        if (!data.success || !data?.special_reference) return;
+
+        // log request
+
+        const updatedOrder = await orderService.onCapturePayment(
+          data?.special_reference
+        );
+
+        return;
+      default:
+        return;
+    }
+  }
+}
+
+module.exports = new PaymentService();

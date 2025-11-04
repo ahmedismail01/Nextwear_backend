@@ -1,8 +1,16 @@
 const userQuery = require("../queries/userQuery");
 const userCommand = require("../commands/userCommand");
-const AppError = require("../utils/appError");
+const AppError = require("../utils/AppError");
 
 class UserService {
+  async getUser(userId) {
+    const user = await userQuery.getRecord({ _id: userId });
+    if (!user) {
+      throw new AppError("User not found", 404, true);
+    }
+    return user;
+  }
+
   async updateUser(userId, data) {
     // check if the user exists
     const user = await userQuery.getRecord({ _id: userId });

@@ -92,10 +92,10 @@ const removeVariant = async (productId, variantId) => {
   }
 };
 
-const updateVariant = async (productId, variantId, data) => {
+const updateVariant = async (variantId, data) => {
   try {
     const oldData = await Product.findOne({
-      _id: productId,
+      "variants._id": variantId,
     });
 
     if (!oldData) {
@@ -108,10 +108,12 @@ const updateVariant = async (productId, variantId, data) => {
       throw new AppError("Variant not found", 404, true);
     }
 
-    data = { ...variant, ...data, images: [...variant.images, ...data.images] };
+    if (data?.images) data.images = [...variant.images, ...data.images];
+
+    data = { ...variant, ...data };
 
     const rec = await Product.findOneAndUpdate(
-      { _id: productId, "variants._id": variantId },
+      { "variants._id": variantId },
       { $set: { "variants.$": data } },
       { new: true }
     );

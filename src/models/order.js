@@ -33,6 +33,12 @@ const OrderSchema = new mongoose.Schema({
     enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
     default: "Pending",
   },
+  specialReference: { type: String },
+  paymentStatus: {
+    type: String,
+    enum: ["Pending", "Paid", "Failed", "Refunded"],
+    default: "Pending",
+  },
   reasonOfCancellation: { type: String },
   promocode: { type: mongoose.Schema.Types.ObjectId, ref: "Promocode" },
   canceledAt: { type: Date },

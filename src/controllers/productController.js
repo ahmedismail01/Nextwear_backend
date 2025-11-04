@@ -53,7 +53,7 @@ const getById = async (req, res) => {
 const updateById = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
-  
+
   if (!isValidId(id)) {
     return res.status(400).json({ success: false, message: "Invalid id" });
   }
@@ -93,7 +93,7 @@ const createVariant = async (req, res) => {
 
 const updateVariant = async (req, res) => {
   const data = req.body || {};
-  const { productId, variantId } = req.params;
+  const { variantId } = req.params;
   const files = req.files;
   let imageUrls = [];
 
@@ -103,11 +103,7 @@ const updateVariant = async (req, res) => {
 
   let imagesSet = new Set([...(data?.images || []), ...(imageUrls || [])]);
   data.images = [...imagesSet];
-  const updatedVariant = await productCommand.updateVariant(
-    productId,
-    variantId,
-    data
-  );
+  const updatedVariant = await productCommand.updateVariant(variantId, data);
 
   const sanitizedProduct = santizeProduct(updatedVariant || {});
   res.json({ success: true, data: sanitizedProduct });

@@ -1,5 +1,6 @@
 const { z } = require("zod");
 const isValidId = require("../utils/isValidId");
+const { id } = require("zod/locales");
 module.exports = schema = {
   list: {
     query: z.object({
@@ -8,7 +9,9 @@ module.exports = schema = {
       materials: z.array(z.string()).optional(),
       featured: z.coerce.boolean().optional(),
       createdAt: z.coerce.date().optional(),
-
+      categoryId: z.refine((id) => isValidId(id), {
+        message: "Invalid category id",
+      }).optional(),
       sort: z.string().optional(),
 
       searchString: z.string().optional(),

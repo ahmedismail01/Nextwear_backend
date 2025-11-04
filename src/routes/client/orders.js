@@ -7,22 +7,26 @@ const asyncHandler = require("../../middlewares/asyncHandler");
 
 app.get(
   "/",
-  [authenticate("Admin"), validator(schema.list)],
-  asyncHandler(controller.getAllOrders)
+  [authenticate(), validator(schema.list)],
+  asyncHandler(controller.getMyOrders)
 );
 
 app.get(
   "/:id",
-  [authenticate("Admin"), validator(schema.getOne)],
-  asyncHandler(controller.getOrder)
+  [authenticate(), validator(schema.getOne)],
+  asyncHandler(controller.getMyOrder)
+);
+
+app.post(
+  "/",
+  [authenticate(), validator(schema.create)],
+  asyncHandler(controller.createOrder)
 );
 
 app.patch(
-  "/:id/change-status",
-  [authenticate("Admin"), validator(schema.changeStatus)],
-  asyncHandler(controller.changeOrderStatus)
+  "/:id/cancel",
+  [authenticate(), validator(schema.cancel)],
+  asyncHandler(controller.cancelOrder)
 );
-
-
 
 module.exports = app;

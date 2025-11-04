@@ -12,7 +12,6 @@ const getRecord = async (query) => {
 
 const getRecords = async (query, offset, limit, sort) => {
   try {
-    
     if (query.minFinalPrice || query.maxFinalPrice) {
       query.finalPrice = {};
       if (query.minFinalPrice)

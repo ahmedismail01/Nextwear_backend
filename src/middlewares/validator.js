@@ -1,6 +1,4 @@
-const formateError = (error) => {
-  return error.path[0] + " " + error.message;
-};
+const formateError = require("../utils/formateValidationError");
 
 const validate = (schema) => (req, res, next) => {
   try {
