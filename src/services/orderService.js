@@ -1,6 +1,6 @@
 const orderQuery = require("../queries/orderQuery");
 const orderCommand = require("../commands/orderCommand");
-const AppError = require("../utils/AppError");
+const AppError = require("../utils/appError");
 const userService = require("./userService");
 const productService = require("./productService");
 const promoCodeService = require("./promoCodeService");
