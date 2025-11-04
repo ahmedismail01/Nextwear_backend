@@ -1,6 +1,6 @@
 const userQuery = require("../queries/userQuery");
 const userCommand = require("../commands/userCommand");
-const AppError = require("../utils/AppError");
+const AppError = require("../utils/appError");
 
 class UserService {
   async getUser(userId) {
