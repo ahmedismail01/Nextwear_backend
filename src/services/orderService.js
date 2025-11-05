@@ -101,8 +101,12 @@ class OrderService {
       trackingNumber,
     });
 
+    if (promocodeProduct) {
+      variantsAfterDiscount.push(promocodeProduct);
+    }
+
     const paymentLink = await paymentService.getPaymentLink({
-      products: [...variantsAfterDiscount, promocodeProduct],
+      products: variantsAfterDiscount,
       user,
       finalPrice,
       trackingNumber,
