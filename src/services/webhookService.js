@@ -1,3 +1,5 @@
+const orderService = require("./orderService");
+
 class WebhookService {
   async onPaymobNotification(data) {
     const { type, obj } = data;
