@@ -5,8 +5,6 @@ const formateError = require("../utils/formateValidationError");
 const orderService = require("./orderService");
 
 class PaymentService {
-  constructor() {}
-
   async getPaymentLink({ products, user, finalPrice, orderId }) {
     const priceInCents = finalPrice * 100;
 
@@ -37,27 +35,6 @@ class PaymentService {
 
     let paymentLink = `${process.env.PAYMOB_PAYMENT_URL}?publicKey=${process.env.PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
     return paymentLink;
-  }
-
-  async onNotification(data) {
-    const { type, obj } = data;
-
-    switch (type) {
-      case "TRANSACTION":
-        // log request
-
-        console.log(data);
-
-        if (!obj?.success) {
-          await orderService.onFailPayment(obj?.order?.merchant_order_id);
-        }
-
-        await orderService.onCapturePayment(obj?.order?.merchant_order_id);
-
-        return;
-      default:
-        return;
-    }
   }
 }
 
