@@ -101,6 +101,13 @@ class OrderService {
 
     return order;
   }
+
+  async onFailPayment(orderId) {
+    await orderCommand.updateRecord(
+      { _id: orderId },
+      { paymentStatus: "failed" }
+    );
+  }
 }
 
 module.exports = new OrderService();

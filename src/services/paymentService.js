@@ -44,16 +44,12 @@ class PaymentService {
 
     switch (type) {
       case "TRANSACTION":
-        console.log("Transaction successfull");
-        console.log(data);
-
-        if (!data.success || !data?.special_reference) return;
+        if (!data.success) {
+          await orderService.onFailPayment(data?.merchant_id);
+        }
 
         // log request
-
-        const updatedOrder = await orderService.onCapturePayment(
-          data?.special_reference
-        );
+        await orderService.onCapturePayment(data?.merchant_id);
 
         return;
       default:
