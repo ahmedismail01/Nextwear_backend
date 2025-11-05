@@ -40,7 +40,7 @@ class PaymentService {
   }
 
   async onNotification(data) {
-    const { type } = data;
+    const { type, obj } = data;
 
     switch (type) {
       case "TRANSACTION":
@@ -48,11 +48,11 @@ class PaymentService {
 
         console.log(data);
 
-        if (!data?.success) {
-          await orderService.onFailPayment(data?.merchant_id);
+        if (!obj?.success) {
+          await orderService.onFailPayment(obj?.order?.merchant_order_id);
         }
 
-        await orderService.onCapturePayment(data?.merchant_id);
+        await orderService.onCapturePayment(obj?.order?.merchant_order_id);
 
         return;
       default:
