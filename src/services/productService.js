@@ -12,7 +12,7 @@ class ProductService {
       const result = await this.checkVariantAvailability(variantId, quantity);
 
       if (!result.isAvailable) {
-        return AppError(`Variant ${variantId} not available`, 400, true);
+        return new AppError(`Variant ${variantId} not available`, 400, true);
       }
 
       results.push(result);
@@ -27,19 +27,19 @@ class ProductService {
     });
 
     if (!product) {
-      return AppError(`Variant ${variantId} is not available`, 404, true);
+      throw new AppError(`Variant ${variantId} is not available`, 404, true);
     }
 
     const variant = product.variants.id(variantId)?.toObject();
 
     if (!variant) {
-      return AppError(`Variant ${variantId} is not available`, 404, true);
+      throw new AppError(`Variant ${variantId} is not available`, 404, true);
     }
 
     const isAvailable = variant.quantity >= quantity;
 
     if (!isAvailable) {
-      return AppError(`Variant ${variantId} not available`, 400, true);
+      throw new AppError(`Variant ${variantId} not available`, 400, true);
     }
 
     let result = {
@@ -57,7 +57,29 @@ class ProductService {
 
   async consumeProducts(products) {
     for (const { variant, quantity } of products) {
-      await productCommand.updateVariant(variant._id, quantity);
+      const product = await productQuery.getRecord({
+        "variants._id": variant._id,
+      });
+
+      if (!product) {
+        throw new AppError("Product not found", 404, true);
+      }
+
+      let realVariant = product.variants.id(variant._id)?.toObject();
+
+      if (!variant) {
+        throw new AppError("Variant not found", 404, true);
+      }
+
+      if (realVariant.quantity < quantity) {
+        // refund the user
+
+        throw new AppError("Not enough quantity", 400, true);
+      }
+
+      await productCommand.updateVariant(variant._id, {
+        quantity: realVariant.quantity - quantity,
+      });
     }
   }
 
@@ -71,7 +93,6 @@ class ProductService {
 
       data.category = category;
     }
-    console.log(data);
     return await productCommand.updateRecord({ _id: id }, data);
   }
 

@@ -33,6 +33,7 @@ const OrderSchema = new mongoose.Schema({
     enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
     default: "Pending",
   },
+  trackingNumber: { type: String , unique: true},
   specialReference: { type: String },
   paymentStatus: {
     type: String,

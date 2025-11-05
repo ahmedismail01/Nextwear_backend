@@ -30,16 +30,40 @@ class OrderService {
 
   async getTotalPrice(products, promocode) {
     let totalPrice = 0;
+    let variantsAfterDiscount = [];
+    let promocodeDiscountInCents = 0;
 
     for (const product of products) {
-      totalPrice += product.purchasePrice * product.quantity;
+      let purchasePrice = product.purchasePrice;
+      let priceAfterDiscount =
+        purchasePrice - (product.product?.discount / 100) * purchasePrice;
+
+      variantsAfterDiscount.push({
+        ...product,
+        amount: Math.round(priceAfterDiscount),
+      });
+
+      totalPrice += priceAfterDiscount * product.quantity;
     }
 
     if (promocode) {
-      totalPrice -= totalPrice * (promocode.discount / 100);
+      promocodeDiscountInCents = Math.round(
+        totalPrice * (promocode.discount / 100)
+      );
+      totalPrice -= (promocode.discount / 100) * totalPrice;
     }
 
-    return totalPrice;
+    return {
+      totalPrice: Math.round(totalPrice),
+      variantsAfterDiscount,
+      promocodeProduct: promocode
+        ? {
+            quantity: 1,
+            amount: -promocodeDiscountInCents,
+            name: promocode.code,
+          }
+        : null,
+    };
   }
 
   async createOrder(userId, orderData) {
@@ -47,7 +71,7 @@ class OrderService {
 
     const user = await userService.getUser({ _id: userId });
 
-    const address = user.addresses.id(addressId).toObject();
+    const address = user.addresses?.id(addressId)?.toObject();
     if (!address) {
       throw new AppError("Address not found", 404, true);
     }
@@ -60,24 +84,28 @@ class OrderService {
       redeemedPromocode = await promoCodeService.redeem(promocode);
     }
 
-    const finalPrice = await this.getTotalPrice(
-      variantsAvailability,
-      redeemedPromocode
-    );
+    const {
+      totalPrice: finalPrice,
+      variantsAfterDiscount,
+      promocodeProduct,
+    } = await this.getTotalPrice(variantsAvailability, redeemedPromocode);
+
+    const trackingNumber = this.generateTrackingNumber();
 
     const order = await orderCommand.createRecord({
       user,
       address,
-      products: variantsAvailability,
+      products: variantsAfterDiscount,
       promocode: redeemedPromocode,
       finalPrice,
+      trackingNumber,
     });
 
     const paymentLink = await paymentService.getPaymentLink({
-      products: variantsAvailability,
+      products: [...variantsAfterDiscount, promocodeProduct],
       user,
       finalPrice,
-      orderId: order._id.toString(),
+      trackingNumber,
     });
 
     return {
@@ -86,28 +114,38 @@ class OrderService {
     };
   }
 
-  async onCapturePayment(orderId) {
-    const order = await orderQuery.getRecord({ _id: orderId });
+  async onCapturePayment(trackingNumber) {
+    const order = await orderQuery.getRecord({ trackingNumber });
     if (!order) {
       throw new AppError("Order not found", 404, true);
+    }
+
+    if (order.paymentStatus === "Paid") {
+      throw new AppError("Order is already paid", 400, true);
     }
 
     await productService.consumeProducts(order.products);
 
     await orderCommand.updateRecord(
-      { _id: orderId },
-      { paymentStatus: "paid" }
+      { trackingNumber },
+      { paymentStatus: "Paid" }
     );
 
     return order;
   }
 
-  async onFailPayment(orderId) {
+  async onFailPayment(trackingNumber) {
     await orderCommand.updateRecord(
-      { _id: orderId },
-      { paymentStatus: "failed" }
+      { trackingNumber },
+      { paymentStatus: "Failed", status: "Cancelled", reason: "Payment failed" }
     );
   }
+
+  generateTrackingNumber = () => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `NW${timestamp}${random}`;
+  };
 }
 
 module.exports = new OrderService();
