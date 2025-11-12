@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const PaymentWebhookLogsSchema = new mongoose.Schema({
-  data: { type: String, required: true },
+  data: { type: Object, required: true },
   status: { type: String, required: true },
   type: { type: String, required: true },
   provider: { type: String, required: true },
