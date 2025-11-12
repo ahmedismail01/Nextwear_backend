@@ -29,7 +29,7 @@ class PaymentService {
     return paymentLink;
   }
 
-  async authenticateCallback(data) {
+  async authenticateCallback(hmac, data) {
     const keys = [
       "amount_cents",
       "created_at",
@@ -53,20 +53,23 @@ class PaymentService {
       "success",
     ];
 
-    const sortedKeys = Object.keys(data).sort();
     const hmacSecret = process.env.PAYMOB_HMAC_SECRET;
     let hmacString = "";
 
-    for (const key of sortedKeys) {
-      if (!keys.includes(key)) return false;
+    for (const key of keys) {
       hmacString += data[key];
     }
 
-    const recievedHmac = data.hmac;
+    const recievedHmac = hmac;
+    console.log({ data });
+    console.log({ recievedHmac, hmacSecret, hmacString });
+
     const calculatedHmac = crypto
-      .createHmac("sha256", hmacSecret)
+      .createHmac("sha512", hmacSecret)
       .update(hmacString)
       .digest("hex");
+
+    console.log({ calculatedHmac });
     if (recievedHmac != calculatedHmac) return false;
     return true;
   }

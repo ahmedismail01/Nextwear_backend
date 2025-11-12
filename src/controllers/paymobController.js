@@ -3,7 +3,18 @@ const webhookService = require("../services/webhookService");
 
 const onNotification = async (req, res) => {
   const data = req.body;
-  const isValid = await paymobService.authenticateCallback(req.query);
+  const { hmac } = req.query;
+  if (!hmac) return res.status(400).json({ success: false });
+  let obj = {
+    ...data.obj,
+    "obj.id": data.obj.id,
+    "order.id": data.obj.order.id,
+    "source_data.pan": data.obj.source_data.pan,
+    "source_data.sub_type": data.obj.source_data.sub_type,
+    "source_data.type": data.obj.source_data.type,
+  };
+  console.log(obj);
+  const isValid = await paymobService.authenticateCallback(hmac, obj);
   if (!isValid) return res.status(400).json({ success: false });
   await webhookService.onPaymobNotification(data);
   res.status(200).json({ success: true });
@@ -12,7 +23,13 @@ const onNotification = async (req, res) => {
 const onCallback = async (req, res) => {
   const { success, amount_cents, merchant_order_id, hmac } = req.query;
 
-  const isValid = await paymobService.authenticateCallback(req.query);
+  if (!hmac) return res.status(400).json({ success: false });
+
+  const isValid = await paymobService.authenticateCallback(hmac, {
+    "obj.id": req.query.id,
+    "order.id": req.query.order,
+    ...req.query,
+  });
 
   if (!isValid) return res.status(400).json({ success: false });
 
