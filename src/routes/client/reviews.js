@@ -6,10 +6,6 @@ const validator = require("../../middlewares/validator");
 const schema = require("../../validations/reviewValidation.js");
 
 // get all product reviews
-app.get(
-  "/",
-  [authenticate("Admin"), validator(schema.list)],
-  asyncHandler(controller.getAllReviews)
-);
+app.get("/", [validator(schema.list)], asyncHandler(controller.getAllReviews));
 
 module.exports = app;

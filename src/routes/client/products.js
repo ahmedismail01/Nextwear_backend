@@ -14,18 +14,9 @@ const uploadImages = upload({
 // Products
 
 // get products with filter, sort, pagination
-app.get(
-  "/",
-  [authenticate(), validator(schema.list)],
-  asyncHandler(controller.list)
-);
+app.get("/", [validator(schema.list)], asyncHandler(controller.list));
 
 // get product by id
-app.get(
-  "/:id",
-  [authenticate(), validator(schema.paramsId)],
-  asyncHandler(controller.getById)
-);
-
+app.get("/:id", [validator(schema.paramsId)], asyncHandler(controller.getById));
 
 module.exports = app;
