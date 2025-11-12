@@ -1,4 +1,5 @@
 const orderService = require("./orderService");
+const paymentWebhookLogsCommand = require("../commands/paymentWebhookLogsCommand");
 
 class WebhookService {
   async onPaymobNotification(data) {
@@ -7,7 +8,12 @@ class WebhookService {
     switch (type) {
       case "TRANSACTION":
         // log request
-
+        await paymentWebhookLogsCommand.createRecord({
+          data: JSON.stringify(data),
+          status: obj.status,
+          type,
+          provider: "paymob",
+        });
 
         if (!obj?.success) {
           await orderService.onFailPayment(obj?.order?.merchant_order_id);

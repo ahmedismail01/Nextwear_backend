@@ -13,7 +13,6 @@ const onNotification = async (req, res) => {
     "source_data.sub_type": data.obj.source_data.sub_type,
     "source_data.type": data.obj.source_data.type,
   };
-  console.log(obj);
   const isValid = await paymobService.authenticateCallback(hmac, obj);
   if (!isValid) return res.status(400).json({ success: false });
   await webhookService.onPaymobNotification(data);
