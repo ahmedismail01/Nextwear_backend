@@ -86,7 +86,6 @@ class ProductService {
   async updateProduct(id, data) {
     if (data.category) {
       const category = await categoryQuery.getRecord({ _id: data.category });
-      console.log(category);
       if (!category) {
         throw new AppError("Category not found", 404, true);
       }

@@ -11,11 +11,11 @@ This project was made for an online store to serve user's products online with a
 
 ## How to install this project
 
-1 - clone the project
-2 - install node if you dont have it
-3 - open project folder
-4 - open terminal and install the packages using `npm i`
-5 - setup your environment variables
+1. clone the project
+2. install node if you dont have it
+3. open project folder
+4. open terminal and install the packages using `npm i`
+5. setup your environment variables
 
 and your good to go
 

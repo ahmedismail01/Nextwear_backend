@@ -8,7 +8,6 @@ class WebhookService {
       case "TRANSACTION":
         // log request
 
-        console.log(data);
 
         if (!obj?.success) {
           await orderService.onFailPayment(obj?.order?.merchant_order_id);
