@@ -9,7 +9,7 @@ class WebhookService {
       case "TRANSACTION":
         // log request
         await paymentWebhookLogsCommand.createRecord({
-          data: JSON.stringify(data),
+          data: data,
           status: obj?.success ? "success" : obj.pending ? "pending" : "failed",
           type,
           provider: "paymob",
