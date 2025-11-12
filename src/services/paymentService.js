@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 const formateError = require("../utils/formateValidationError");
 const orderService = require("./orderService");
 const { createOrderDto } = require("../dto/paymobDto");
+const crypto = require("crypto");
 
 class PaymentService {
   async getPaymentLink({ products, user, finalPrice, trackingNumber }) {
@@ -17,7 +18,7 @@ class PaymentService {
     const parsed = paymentSchema.createPayment.body.safeParse(data);
     if (!parsed.success)
       throw new AppError(`${formateError(parsed.error.issues[0])}`, 400, true);
-    
+
     data = parsed.data;
 
     const response = await paymobConnector.createPayment(data);
@@ -26,6 +27,48 @@ class PaymentService {
 
     let paymentLink = `${process.env.PAYMOB_PAYMENT_URL}?publicKey=${process.env.PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
     return paymentLink;
+  }
+
+  async authenticateCallback(data) {
+    const keys = [
+      "amount_cents",
+      "created_at",
+      "currency",
+      "error_occured",
+      "has_parent_transaction",
+      "obj.id",
+      "integration_id",
+      "is_3d_secure",
+      "is_auth",
+      "is_capture",
+      "is_refunded",
+      "is_standalone_payment",
+      "is_voided",
+      "order.id",
+      "owner",
+      "pending",
+      "source_data.pan",
+      "source_data.sub_type",
+      "source_data.type",
+      "success",
+    ];
+
+    const sortedKeys = Object.keys(data).sort();
+    const hmacSecret = process.env.PAYMOB_HMAC_SECRET;
+    let hmacString = "";
+
+    for (const key of sortedKeys) {
+      if (!keys.includes(key)) return false;
+      hmacString += data[key];
+    }
+
+    const recievedHmac = data.hmac;
+    const calculatedHmac = crypto
+      .createHmac("sha256", hmacSecret)
+      .update(hmacString)
+      .digest("hex");
+    if (recievedHmac != calculatedHmac) return false;
+    return true;
   }
 }
 

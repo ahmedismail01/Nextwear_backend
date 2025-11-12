@@ -1,6 +1,7 @@
 const categoryCommand = require("../commands/categoryCommand");
 const categoryQuery = require("../queries/categoryQuery");
-const queue = require("../queues/categoryQueue");
+// const queue = require("../queues/categoryQueue");
+const event = require("../events/event");
 
 class CategoryService {
   async createCategory(data) {
@@ -12,12 +13,11 @@ class CategoryService {
   }
 
   async updateCategory(query, updateData) {
-    
     // update category
     const result = await categoryCommand.updateRecord(query, updateData);
 
     // fire job to update category products
-    const job = await queue.add("updateCategoryProducts", { category: result });
+    event.emit("updateCategoryProducts", { category: result });
 
     return result;
   }

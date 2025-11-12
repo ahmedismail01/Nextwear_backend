@@ -3,12 +3,18 @@ const webhookService = require("../services/webhookService");
 
 const onNotification = async (req, res) => {
   const data = req.body;
+  const isValid = await paymobService.authenticateCallback(req.query);
+  if (!isValid) return res.status(400).json({ success: false });
   await webhookService.onPaymobNotification(data);
   res.status(200).json({ success: true });
 };
 
 const onCallback = async (req, res) => {
-  const { success, amount_cents, merchant_order_id } = req.query;
+  const { success, amount_cents, merchant_order_id, hmac } = req.query;
+
+  const isValid = await paymobService.authenticateCallback(req.query);
+
+  if (!isValid) return res.status(400).json({ success: false });
 
   const paymentStatus = success === "true" ? "Successful" : "Failed";
   const amount = amount_cents

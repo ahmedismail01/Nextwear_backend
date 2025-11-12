@@ -1,6 +1,6 @@
 require("dotenv").config();
 require("../src/config/db")();
-require("./worker");
+require("../src/events/index");
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
@@ -10,9 +10,6 @@ const routes = require("../src/routes");
 const errorHandler = require("../src/middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
 const port = process.env.PORT || 3000;
-const paymobConnector = require("../src/connectors/paymob/paymobConnector");
-
-paymobConnector.createPayment();
 
 app.use(cors());
 app.use(morgan("dev"));

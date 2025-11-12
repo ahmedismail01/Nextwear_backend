@@ -1,0 +1,1 @@
+require("./listeners/category.listener");
