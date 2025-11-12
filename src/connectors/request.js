@@ -1,7 +1,6 @@
 const request = async (options) => {
-  let defaultOptions = {};
-
   try {
+    let defaultOptions = {};
     const response = await fetch(options.url, {
       ...defaultOptions,
       ...options,

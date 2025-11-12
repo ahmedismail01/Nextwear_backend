@@ -61,15 +61,12 @@ class PaymentService {
     }
 
     const recievedHmac = hmac;
-    console.log({ data });
-    console.log({ recievedHmac, hmacSecret, hmacString });
 
     const calculatedHmac = crypto
       .createHmac("sha512", hmacSecret)
       .update(hmacString)
       .digest("hex");
 
-    console.log({ calculatedHmac });
     if (recievedHmac != calculatedHmac) return false;
     return true;
   }
