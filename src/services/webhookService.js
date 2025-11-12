@@ -10,7 +10,7 @@ class WebhookService {
         // log request
         await paymentWebhookLogsCommand.createRecord({
           data: JSON.stringify(data),
-          status: obj.status,
+          status: obj?.success ? "success" : obj.pending ? "pending" : "failed",
           type,
           provider: "paymob",
         });
