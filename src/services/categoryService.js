@@ -1,6 +1,5 @@
 const categoryCommand = require("../commands/categoryCommand");
 const categoryQuery = require("../queries/categoryQuery");
-// const queue = require("../queues/categoryQueue");
 const event = require("../events/event");
 
 class CategoryService {
