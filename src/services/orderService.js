@@ -5,6 +5,7 @@ const userService = require("./userService");
 const productService = require("./productService");
 const promoCodeService = require("./promoCodeService");
 const paymentService = require("./paymentService");
+const notificationService = require("./notificationService");
 class OrderService {
   async changeOrderStatus(orderId, status) {
     // check if order exists
@@ -28,6 +29,15 @@ class OrderService {
     return changedOrder;
   }
 
+  async promoCodeDiscount(promocode, totalPrice) {
+    if (!promocode) return totalPrice;
+    promocodeDiscountInCents = Math.round(
+      totalPrice * (promocode.discount / 100)
+    );
+    totalPrice -= (promocode.discount / 100) * totalPrice;
+    return { totalPrice, promocodeDiscountInCents };
+  }
+
   async getTotalPrice(products, promocode) {
     let totalPrice = 0;
     let variantsAfterDiscount = [];
@@ -46,14 +56,12 @@ class OrderService {
       totalPrice += priceAfterDiscount * product.quantity;
     }
 
-    if (promocode) {
-      promocodeDiscountInCents = Math.round(
-        totalPrice * (promocode.discount / 100)
-      );
-      totalPrice -= (promocode.discount / 100) * totalPrice;
-    }
+    const discountResult = await this.promoCodeDiscount(promocode, totalPrice);
 
-    return {
+    totalPrice = discountResult.totalPrice;
+    promocodeDiscountInCents = discountResult.promocodeDiscountInCents || 0;
+
+    const result = {
       totalPrice: Math.round(totalPrice),
       variantsAfterDiscount,
       promocodeProduct: promocode
@@ -64,6 +72,8 @@ class OrderService {
           }
         : null,
     };
+
+    return result;
   }
 
   async createOrder(userId, orderData) {
@@ -119,23 +129,38 @@ class OrderService {
   }
 
   async onCapturePayment(trackingNumber) {
-    const order = await orderQuery.getRecord({ trackingNumber });
-    if (!order) {
-      throw new AppError("Order not found", 404, true);
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const order = await orderQuery.getRecord({ trackingNumber }, session);
+      if (!order) {
+        throw new AppError("Order not found", 404, true);
+      }
+
+      if (order.paymentStatus === "Paid") {
+        throw new AppError("Order is already paid", 400, true);
+      }
+
+      await productService.consumeProducts(order.products, session);
+
+      await orderCommand.updateRecord(
+        { trackingNumber },
+        { paymentStatus: "Paid" },
+        session
+      );
+
+      await notificationService.sendOrderInvoice(order, order.user.email);
+
+      await session.commitTransaction();
+      session.endSession();
+      return order;
+    } catch (err) {
+      // capturing failed handle refund
+
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
     }
-
-    if (order.paymentStatus === "Paid") {
-      throw new AppError("Order is already paid", 400, true);
-    }
-
-    await productService.consumeProducts(order.products);
-
-    await orderCommand.updateRecord(
-      { trackingNumber },
-      { paymentStatus: "Paid" }
-    );
-
-    return order;
   }
 
   async onFailPayment(trackingNumber) {

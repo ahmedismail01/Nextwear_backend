@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true, unique: true },
   addresses: [
     {
+      name: { type: String, required: true },
       street: { type: String, required: true },
       city: { type: String, required: true },
       state: { type: String, required: true },

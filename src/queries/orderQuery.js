@@ -1,8 +1,8 @@
 const Order = require("../models/order");
 
-const getRecord = async (query) => {
+const getRecord = async (query, session) => {
   try {
-    const order = await Order.findOne(query);
+    const order = await Order.findOne(query).session(session || null);
     return order;
   } catch (error) {
     console.error("Error fetching order:", error);

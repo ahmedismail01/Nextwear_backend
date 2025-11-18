@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const productCommand = require("../commands/productCommand");
 const categoryQuery = require("../queries/categoryQuery");
 const productQuery = require("../queries/productQuery");
@@ -48,6 +49,8 @@ class ProductService {
       quantity,
       image: variant?.images[0],
       name: product.name,
+      size: variant.size,
+      color: variant.color,
       purchasePrice: variant.price,
       isAvailable,
     };
@@ -55,11 +58,14 @@ class ProductService {
     return result;
   }
 
-  async consumeProducts(products) {
+  async consumeProducts(products, session) {
     for (const { variant, quantity } of products) {
-      const product = await productQuery.getRecord({
-        "variants._id": variant._id,
-      });
+      const product = await productQuery.getRecord(
+        {
+          "variants._id": variant._id,
+        },
+        session
+      );
 
       if (!product) {
         throw new AppError("Product not found", 404, true);
@@ -72,14 +78,16 @@ class ProductService {
       }
 
       if (realVariant.quantity < quantity) {
-        // refund the user
-
         throw new AppError("Not enough quantity", 400, true);
       }
 
-      await productCommand.updateVariant(variant._id, {
-        quantity: realVariant.quantity - quantity,
-      });
+      await productCommand.updateVariant(
+        variant._id,
+        {
+          quantity: realVariant.quantity - quantity,
+        },
+        session
+      );
     }
   }
 

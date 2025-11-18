@@ -46,9 +46,9 @@ const getRecords = async (query, offset, limit, sort) => {
   }
 };
 
-const getRecord = async (query) => {
+const getRecord = async (query, session) => {
   try {
-    const product = await Product.findOne(query);
+    const product = await Product.findOne(query).session(session || null);
     return product;
   } catch (error) {
     console.error("Error fetching products:", error);

@@ -11,13 +11,13 @@ const createRecord = async (data) => {
   }
 };
 
-const updateRecord = async (query, updateData) => {
+const updateRecord = async (query, updateData, session) => {
   try {
     const rec = await Order.findOneAndUpdate(
       query,
       { ...updateData, updatedAt: new Date() },
       { new: true }
-    );
+    ).session(session || null);
     return rec;
   } catch (error) {
     console.error("Error updating order:", error);

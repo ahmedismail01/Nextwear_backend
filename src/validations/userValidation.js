@@ -14,6 +14,7 @@ module.exports = schema = {
 
   addAddress: {
     body: z.object({
+      name: z.string().min(1),
       street: z.string().min(1),
       city: z.string().min(1),
       state: z.string().min(1),
@@ -29,6 +30,7 @@ module.exports = schema = {
       }),
     }),
     body: z.object({
+      name: z.string().min(1),
       street: z.string().min(1),
       city: z.string().min(1),
       state: z.string().min(1),

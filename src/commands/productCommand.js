@@ -92,7 +92,7 @@ const removeVariant = async (productId, variantId) => {
   }
 };
 
-const updateVariant = async (variantId, data) => {
+const updateVariant = async (variantId, data, session) => {
   try {
     const oldData = await Product.findOne({
       "variants._id": variantId,
@@ -116,7 +116,7 @@ const updateVariant = async (variantId, data) => {
       { "variants._id": variantId },
       { $set: { "variants.$": data } },
       { new: true }
-    );
+    ).session(session || null);
     return rec;
   } catch (error) {
     console.error("Error updating variant:", error);

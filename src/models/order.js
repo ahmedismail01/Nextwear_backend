@@ -1,8 +1,19 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  user: {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+  },
   address: {
+    name: { type: String, required: true },
     street: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
@@ -23,6 +34,8 @@ const OrderSchema = new mongoose.Schema({
       },
       image: { type: String, required: false },
       name: { type: String, required: true },
+      size: { type: String, required: true },
+      color: { type: String, required: true },
       purchasePrice: { type: Number, required: true, min: 0 },
       quantity: { type: Number, required: true, min: 1 },
     },
@@ -33,7 +46,7 @@ const OrderSchema = new mongoose.Schema({
     enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
     default: "Pending",
   },
-  trackingNumber: { type: String , unique: true},
+  trackingNumber: { type: String, unique: true },
   specialReference: { type: String },
   paymentStatus: {
     type: String,

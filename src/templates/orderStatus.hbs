@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Order Status Update</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin:0; padding:20px; background:#f7f7f7;">
+  <div style="max-width:600px; margin:auto; background:white; padding:20px; border-radius:8px;">
+    
+    <h2 style="color:#333;">Hi {{customerName}},</h2>
+
+    <p>Your order <strong>#{{orderId}}</strong> has a new update:</p>
+
+    <div style="background:#eee; padding:12px; border-radius:5px; margin:15px 0;">
+      <strong>Status:</strong> {{orderStatus}}
+    </div>
+
+    {{#if trackingNumber}}
+    <p>
+      <strong>Tracking Number:</strong> {{trackingNumber}}<br/>
+      {{#if trackingUrl}}
+        <a href="{{trackingUrl}}" style="color:#007bff;">Track your package</a>
+      {{/if}}
+    </p>
+    {{/if}}
+
+    <p>If you have any questions, feel free to contact us anytime.</p>
+
+    <p style="margin-top:30px;">Thank you,<br/>The NextWear Team</p>
+  </div>
+</body>
+</html>
