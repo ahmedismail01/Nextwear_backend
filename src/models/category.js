@@ -9,26 +9,33 @@ const CategorySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-CategorySchema.pre(["save", "update"], function (next) {
-  if (!this.isModified("name")) return next();
+function generateSlug(name) {
+  return slugify(name, { lower: true, strict: true, trim: true });
+}
 
-  this.slug = slugify(this.name, {
-    lower: true,
-    strict: true,
-    trim: true,
-  });
-
+CategorySchema.pre("save", function (next) {
+  if (this.isModified("name")) {
+    this.slug = generateSlug(this.name);
+  }
   next();
 });
 
-CategorySchema.pre("findOneAndUpdate", function (next) {
+const updateSlugMiddleware = function (next) {
   if (this._update.name) {
-    this._update.slug = slugify(this._update.name, {
-      lower: true,
-      strict: true,
-      trim: true,
-    });
+    this._update.slug = generateSlug(this._update.name);
   }
+  next();
+};
+
+CategorySchema.pre("findOneAndUpdate", updateSlugMiddleware);
+CategorySchema.pre("updateOne", updateSlugMiddleware);
+
+CategorySchema.pre("insertMany", function (next, docs) {
+  docs.forEach((doc) => {
+    if (doc.name) {
+      doc.slug = generateSlug(doc.name);
+    }
+  });
   next();
 });
 
