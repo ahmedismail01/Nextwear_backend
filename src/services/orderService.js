@@ -6,6 +6,7 @@ const productService = require("./productService");
 const promoCodeService = require("./promoCodeService");
 const paymentService = require("./paymentService");
 const notificationService = require("./notificationService");
+const { default: mongoose } = require("mongoose");
 class OrderService {
   async changeOrderStatus(orderId, status) {
     // check if order exists
@@ -60,7 +61,7 @@ class OrderService {
 
     totalPrice = discountResult.totalPrice;
     promocodeDiscountInCents = discountResult.promocodeDiscountInCents || 0;
-    
+
     const result = {
       totalPrice: Math.round(totalPrice),
       variantsAfterDiscount,
