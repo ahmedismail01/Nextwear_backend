@@ -30,7 +30,7 @@ class OrderService {
   }
 
   async promoCodeDiscount(promocode, totalPrice) {
-    if (!promocode) return totalPrice;
+    if (!promocode) return { totalPrice };
     promocodeDiscountInCents = Math.round(
       totalPrice * (promocode.discount / 100)
     );
@@ -60,7 +60,7 @@ class OrderService {
 
     totalPrice = discountResult.totalPrice;
     promocodeDiscountInCents = discountResult.promocodeDiscountInCents || 0;
-
+    
     const result = {
       totalPrice: Math.round(totalPrice),
       variantsAfterDiscount,
