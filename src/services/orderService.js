@@ -133,7 +133,7 @@ class OrderService {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const order = await orderQuery.getRecord({ trackingNumber }, session);
+      const order = await orderQuery.getRecord({ trackingNumber });
       if (!order) {
         throw new AppError("Order not found", 404, true);
       }
@@ -149,15 +149,15 @@ class OrderService {
         { paymentStatus: "Paid" },
         session
       );
-
-      await notificationService.sendOrderInvoice(order, order.user.email);
+      await notificationService.sendOrderInvoice(
+        order.toObject(),
+        order.user.email
+      );
 
       await session.commitTransaction();
       session.endSession();
       return order;
     } catch (err) {
-      // capturing failed handle refund
-
       await session.abortTransaction();
       session.endSession();
       throw err;
