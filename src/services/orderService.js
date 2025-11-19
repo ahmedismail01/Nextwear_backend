@@ -131,40 +131,57 @@ class OrderService {
 
   async onCapturePayment(trackingNumber) {
     const session = await mongoose.startSession();
-    session.startTransaction();
     try {
-      const order = await orderQuery.getRecord({ trackingNumber });
-      if (!order) {
-        throw new AppError("Order not found", 404, true);
-      }
+      await session.withTransaction(async () => {
+        const order = await orderQuery.getRecord({ trackingNumber }, session);
+        if (!order) {
+          throw new AppError("Order not found", 404, true);
+        }
 
-      if (order.paymentStatus === "Paid") {
-        throw new AppError("Order is already paid", 400, true);
-      }
+        if (order.paymentStatus === "Paid") {
+          throw new AppError("Order is already paid", 400, true);
+        }
 
-      await productService.consumeProducts(order.products, session);
+        await productService.consumeProducts(order.products, session);
 
+        await orderCommand.updateRecord(
+          { trackingNumber },
+          { paymentStatus: "Paid", status: "Pending" },
+          session
+        );
+        session.orderData = order.toObject();
+        session.userEmail = order.user.email;
+      });
+      await notificationService.sendOrderInvoice(
+        session.orderData,
+        session.userEmail
+      );
+
+      return session.orderData;
+    } catch (err) {
       await orderCommand.updateRecord(
         { trackingNumber },
-        { paymentStatus: "Paid" },
-        session
-      );
-      await notificationService.sendOrderInvoice(
-        order.toObject(),
-        order.user.email
+        {
+          paymentStatus: "Paid",
+          refundStatus: "Initiated",
+          status: "Cancelled",
+          reasonOfCancellation: err.message,
+        }
       );
 
-      await session.commitTransaction();
-      session.endSession();
-      return order;
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
+      // initiate refund
+
+      // email user about refund
+
       throw err;
+    } finally {
+      session.endSession();
     }
   }
 
   async onFailPayment(trackingNumber) {
+    // unuse promocode if used
+
     await orderCommand.updateRecord(
       { trackingNumber },
       { paymentStatus: "Failed", status: "Cancelled", reason: "Payment failed" }
