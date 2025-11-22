@@ -13,9 +13,11 @@ const port = process.env.PORT || 3000;
 const { limiter } = require("../src/middlewares/rateLimiter");
 
 app.use(cors());
+app.set("trust proxy", 1);
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(cookieParser());
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", limiter, routes);
 app.use(errorHandler);
