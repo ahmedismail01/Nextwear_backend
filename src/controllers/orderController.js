@@ -37,7 +37,7 @@ const getMyOrders = async (req, res) => {
   const { page, limit, sort, ...query } = req.query;
   const { offset } = paginate(req.query.page, req.query.limit);
   const orders = await orderQuery.getRecords(
-    { ...query, user: userId },
+    { ...query, "user._id": userId },
     offset,
     limit
   );
@@ -50,7 +50,10 @@ const getMyOrders = async (req, res) => {
 const getMyOrder = async (req, res) => {
   const userId = req.user.id;
   const orderId = req.params.id;
-  const order = await orderQuery.getRecord({ _id: orderId, user: userId });
+  const order = await orderQuery.getRecord({
+    _id: orderId,
+    "user._id": userId,
+  });
   res.status(200).json({ success: true, data: order });
 };
 
