@@ -1,5 +1,3 @@
-const { tr } = require("zod/locales");
-
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({

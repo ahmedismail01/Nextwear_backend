@@ -7,22 +7,22 @@ class authService {
   async login(email, password) {
     const user = await userQuery.getRecord({ email });
     if (!user) {
-      return { error: "User not found!" };
+      throw new AppError("User not found!", 404, true);
     }
     const isMatch = await this.comparePassword(password, user.password);
     if (!isMatch) {
-      return { error: "Invalid credentials" };
+      throw new AppError("Invalid credentials", 401, true);
     }
     return user;
   }
 
   async generateToken(payload) {
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
   }
   async register(userData) {
     const existingUser = await userQuery.getRecord({ email: userData.email });
     if (existingUser) {
-      return { error: "User already exists" };
+      throw new AppError("User already exists", 409, true);
     }
     const newUser = await userCommand.createRecord(userData);
     return newUser;

@@ -1,12 +1,12 @@
 const { getRecord, getRecords } = require("../queries/userQuery");
 const { updateRecord, deleteRecord } = require("../commands/userCommand");
-const { santizeUser, santizeUsers } = require("../dto/userDto");
+const { sanitizeUser, sanitizeUsers } = require("../dto/userDto");
 const userService = require("../services/userService");
 
 const getAllUsers = async (req, res) => {
   const users = await getRecords({});
-  const santizedUsers = santizeUsers(users) || [];
-  res.status(200).json({ success: true, data: santizedUsers });
+  const sanitizedUsers = sanitizeUsers(users) || [];
+  res.status(200).json({ success: true, data: sanitizedUsers });
 };
 
 const getUser = async (req, res) => {
@@ -24,8 +24,8 @@ const getCurrentUser = async (req, res) => {
   if (!user) {
     return res.status(404).json({ success: false, message: "User not found" });
   }
-  const santizedUser = santizeUser(user);
-  res.status(200).json({ success: true, data: santizedUser });
+  const sanitizedUser = sanitizeUser(user);
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 const deleteUser = async (req, res) => {
@@ -44,8 +44,8 @@ const getProfile = async (req, res) => {
   if (!user) {
     return res.status(404).json({ success: false, message: "User not found" });
   }
-  const santizedUser = santizeUser(user);
-  res.status(200).json({ success: true, data: santizedUser });
+  const sanitizedUser = sanitizeUser(user);
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 const updateProfile = async (req, res) => {
@@ -54,25 +54,25 @@ const updateProfile = async (req, res) => {
 
   const updatedUser = await userService.updateUser(userId, updates);
 
-  const santizedUser = santizeUser(updatedUser);
+  const sanitizedUser = sanitizeUser(updatedUser);
 
-  res.status(200).json({ success: true, data: santizedUser });
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 const addAddress = async (req, res) => {
   const userId = req.user.id;
   const address = req.body;
   const updatedUser = await userService.addAddress(userId, address);
-  const santizedUser = santizeUser(updatedUser);
-  res.status(200).json({ success: true, data: santizedUser });
+  const sanitizedUser = sanitizeUser(updatedUser);
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 const removeAddress = async (req, res) => {
   const userId = req.user.id;
   const addressId = req.params.addressId;
   const updatedUser = await userService.removeAddress(userId, addressId);
-  const santizedUser = santizeUser(updatedUser);
-  res.status(200).json({ success: true, data: santizedUser });
+  const sanitizedUser = sanitizeUser(updatedUser);
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 const updateAddress = async (req, res) => {
@@ -84,8 +84,8 @@ const updateAddress = async (req, res) => {
     addressId,
     address
   );
-  const santizedUser = santizeUser(updatedUser);
-  res.status(200).json({ success: true, data: santizedUser });
+  const sanitizedUser = sanitizeUser(updatedUser);
+  res.status(200).json({ success: true, data: sanitizedUser });
 };
 
 module.exports = {

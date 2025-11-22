@@ -1,4 +1,4 @@
-module.exports.santizeUser = (user) => {
+module.exports.sanitizeUser = (user) => {
   return {
     id: user._id,
     email: user.email,
@@ -12,6 +12,6 @@ module.exports.santizeUser = (user) => {
   };
 };
 
-module.exports.santizeUsers = (users) => {
-  return users.map((user) => this.santizeUser(user));
+module.exports.sanitizeUsers = (users) => {
+  return users.map((user) => this.sanitizeUser(user));
 };
