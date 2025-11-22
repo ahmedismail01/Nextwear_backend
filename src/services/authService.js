@@ -7,7 +7,7 @@ class authService {
   async login(email, password) {
     const user = await userQuery.getRecord({ email });
     if (!user) {
-      throw new AppError("User not found!", 404, true);
+      throw new AppError("Invalid credentials", 401, true);
     }
     const isMatch = await this.comparePassword(password, user.password);
     if (!isMatch) {
